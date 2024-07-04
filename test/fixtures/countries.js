@@ -19,7 +19,7 @@ export default {
         //await mongoose.connect(global.__MONGO_URI__);
         return new Promise((resolve, reject) => fs.readFile('test/data/countries.json', 'utf-8', (err, data) => {
             if (err) reject(err)
-            else console.log(JSON.parse(data)) ||
+            else //console.log(JSON.parse(data)) ||
                 countries.deleteMany({}).then(() => countries.insertMany(JSON.parse(data)).then(resolve))
         }))
     }
