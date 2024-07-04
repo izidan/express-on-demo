@@ -1,0 +1,7 @@
+*.npmignore
+.vscode/*
+node_modules
+test-*/*
+!test-*/.gitignore
+globalConfig.json
+swagger.json
