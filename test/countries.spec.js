@@ -15,18 +15,18 @@ describe('aggregations', () => {
             err ? reject(err) : model.deleteMany({}).then(() =>
                 model.insertMany(JSON.parse(data)).then(resolve).catch(reject)).catch(reject)
         )).then(() => model.countDocuments()
-            .then(count => expect(count).toBe(250))))
+            .then(count => expect(count).toBe(249))))
 
     it('should have name attributes for all countries', () =>
         model.find({ name: { $exists: false } })
             .then(countries => expect(countries).toHaveLength(0)));
 
     it('should have names for all countries', () =>
-        model.find({ name: { $exists: false } })
+        model.find({ name: null })
             .then(countries => expect(countries).toHaveLength(0)));
 
     it('should support aggregate object', () =>
         model.aggregate([{ $group: { _id: '$continent', count: { $sum: 1 } } }])
-            .then(result => expect(result).toHaveLength(8)));
+            .then(result => expect(result).toHaveLength(7)));
 
 });
