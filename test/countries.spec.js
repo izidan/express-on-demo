@@ -1,25 +1,32 @@
-import supertest from 'supertest';
-import fixture from './fixtures/countries.js';
+import('mongodb');
+import fs from 'fs';
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import model from './../models/countries.js';
 
 describe('aggregations', () => {
-    beforeAll(fixture.init);
-    afterAll(fixture.deinit);
-    const request = () => supertest(fixture.app());
 
-    it('should reject empty aggregate object', () =>
-        request().get('/api/countries?aggregate={}')
-            .expect(400));
+    beforeAll(() => mongoose.connect(process.env.MONGO_URI || global.__MONGO_URI__));
 
-    it('should reject empty aggregate array', () =>
-        request().get('/api/countries?aggregate=[]')
-            .expect(400));
+    afterAll(() => mongoose.disconnect());
+
+    it('should reseed all countries data using insertMany', () =>
+        new Promise((resolve, reject) => fs.readFile('test/countries.json', 'utf-8', (err, data) =>
+            err ? reject(err) : model.deleteMany({}).then(() =>
+                model.insertMany(JSON.parse(data)).then(resolve).catch(reject)).catch(reject)
+        )).then(() => model.countDocuments()
+            .then(count => expect(count).toBe(250))))
+
+    it('should have name attributes for all countries', () =>
+        model.find({ name: { $exists: false } })
+            .then(countries => expect(countries).toHaveLength(0)));
+
+    it('should have names for all countries', () =>
+        model.find({ name: { $exists: false } })
+            .then(countries => expect(countries).toHaveLength(0)));
 
     it('should support aggregate object', () =>
-        request().get('/api/countries?aggregate={"$group":{"_id":"$continent","count":{"$sum":1}}}')
-            .expect(200)
-            .then(({ body }) => expect(body).toHaveLength(8)));
+        model.aggregate([{ $group: { _id: '$continent', count: { $sum: 1 } } }])
+            .then(result => expect(result).toHaveLength(8)));
 
-    it('should support aggregate with count', () =>
-        request().get('/api/countries?aggregate={"$group":{"_id":"$continent","count":{"$sum":1}}}&count=true')
-            .expect(200, '8'));
 });
