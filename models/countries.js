@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 let schema = new mongoose.Schema({
     _id: { type: String, default: function () { return this['ISO3166-1-Alpha-3'] || this.M49 } },
-    name: { type: String, alias: 'CLDR display name', required: true },
+    name: { type: String, alias: 'CLDR display name' },
     '@xsi:type': { type: String, default: 'Country' },
     capital: { type: String, alias: 'Capital' },
     continent: { type: String, alias: 'Continent' },
