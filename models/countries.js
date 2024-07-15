@@ -2,11 +2,11 @@ import mongoose from 'mongoose'
 
 let schema = new mongoose.Schema({
     _id: { type: String, default: function () { return this['ISO3166-1-Alpha-3'] || this.M49 } },
-    name: { type: String, alias: 'CLDR display name', required: true },
+    name: { type: String, alias: 'CLDR display name', required: true, index: true },
     '@xsi:type': { type: String, default: 'Country' },
-    capital: { type: String, alias: 'Capital', trim: true },
-    continent: { type: String, alias: 'Continent', trim: true },
-    currency: { type: [String], alias: 'ISO4217-currency_alphabetic_code', trim: true, default: undefined, set: v => v ? v.toString().split(',') : v },
+    capital: { type: String, alias: 'Capital', trim: true, index: true },
+    continent: { type: String, alias: 'Continent', trim: true, index: true },
+    currency: { type: [String], alias: 'ISO4217-currency_alphabetic_code', trim: true, index: true, default: undefined, set: v => v ? v.toString().split(',') : v },
     languages: { type: [String], alias: 'Languages', trim: true, default: undefined, set: v => v ? v.toString().split(',') : v },
     independent: { type: Object, alias: 'is_independent', trim: true },
     'iso.alpha2': { alias: 'ISO3166-1-Alpha-2', type: String, trim: true },
@@ -41,7 +41,7 @@ let schema = new mongoose.Schema({
     'names.short.ru': { type: String, alias: 'UNTERM Russian Short' },
     'names.short.es': { type: String, alias: 'UNTERM Spanish Short' },
     m49: { type: Number, alias: 'M49' },
-}, { versionKey: false, minimize: true });
+}, { versionKey: false, minimize: true, autoIndex: true });
 
 const Model = mongoose.model('country', schema, 'countries');
 export default Model;

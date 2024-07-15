@@ -29,4 +29,14 @@ describe('aggregations', () => {
         model.aggregate([{ $group: { _id: '$continent', count: { $sum: 1 } } }])
             .then(result => expect(result).toHaveLength(7)));
 
+    it('should use the index for searching by name', () =>
+        model.find({ name: 'Spain' })
+            .explain('executionStats')
+            .then(out => {
+                expect(out).toHaveProperty('executionStats')
+                expect(out.executionStats.nReturned).toBe(1)
+                expect(out.executionStats.totalDocsExamined).toBe(1)
+                expect(out.executionStats.executionStages.inputStage.stage).toEqual('IXSCAN')
+            }));
+
 });
