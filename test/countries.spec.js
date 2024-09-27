@@ -39,4 +39,8 @@ describe('aggregations', () => {
                 expect(out.executionStats.executionStages.inputStage.stage).toEqual('IXSCAN')
             }));
 
+    it('should have correct count for europe countries', () =>
+        model.find({ continent: 'EU' })
+            .then(countries => expect(countries).toHaveLength(52)));
+
 });
