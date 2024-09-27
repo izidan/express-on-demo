@@ -43,4 +43,21 @@ describe('aggregations', () => {
         model.find({ continent: 'EU' })
             .then(countries => expect(countries).toHaveLength(52)));
 
+    it('only 2 countries in europe starts with S', () =>
+        model.find({ continent: 'EU', name: { $regex: '^S' } })
+            .then(countries => expect(countries).toHaveLength(8)));
+
+
+    it('should use the index for searching by name', () =>
+        model.find({ continent: 'EU', name: { $regex: '^S' } })
+            .explain('executionStats')
+            .then(out => {
+                //console.log(out.executionStats.executionStages.inputStage);
+                expect(out).toHaveProperty('executionStats')
+                expect(out.executionStats.nReturned).toBe(8)
+                expect(out.executionStats.totalDocsExamined).toBe(8)
+                expect(out.executionStats.executionStages.inputStage.stage).toEqual('IXSCAN')
+                expect(out.executionStats.executionStages.inputStage.indexName).toEqual('my_own_index')
+            }));
+
 });
